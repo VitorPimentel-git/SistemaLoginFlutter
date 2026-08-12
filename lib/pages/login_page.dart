@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../dados_mock.dart';
+import 'home_page.dart';
+import 'cadastro_page.dart'; 
 
 class LoginPage extends StatefulWidget{
   const LoginPage({super.key});
@@ -42,12 +44,32 @@ class _LoginPageState extends State<LoginPage> {
           break;
       }
     }
-    mostrarMensagem('E-mail ou senha incorretos');
+    if(usuarioEncontrado == null){
+      mostrarMensagem('E-mail ou senha incorretos');
+    } 
+
+    String nome = usuarioEncontrado?['nome'] ?? '';
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => HomePage(
+          nomeUsuario: nome,
+          emailUsuario: email,
+        ),
+      ),
+    );
   }
 
+  void abrirCadastro(){
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const CadastroPage(),
+      ),
+    );
+  }
   
-  
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -133,7 +155,7 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(height: 10),
 
             OutlinedButton.icon(
-              onPressed: (){},
+              onPressed: abrirCadastro,
               icon: Icon(Icons.person_add),
               label: const Text('Cadastrar'),
             ),
