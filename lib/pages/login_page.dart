@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sistema_login/services/api_service.dart';
 import '../dados_mock.dart';
 import 'home_page.dart';
 import 'cadastro_page.dart'; 
@@ -16,6 +17,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController senhaController = TextEditingController();
 
   bool esconderSenha = true;
+  bool carregando = false;
   
   void mostrarMensagem(String mensagem){
     ScaffoldMessenger.of(context).showSnackBar(
@@ -25,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
   
-  void entrar(){
+  Future<void> entrar() async{
     String email = emailController.text.trim();
     String senha = senhaController.text;
 
@@ -36,25 +38,33 @@ class _LoginPageState extends State<LoginPage> {
 
     Map<String, String>? usuarioEncontrado;
 
-    for(var usuario in usuarios){
-      if (
-        usuario['email'] == email && 
-        usuario['senha'] == senha){
-          @override
-  void dispose(){
-    emailController.dispose();
-    senhaController.dispose();
-    super.dispose();
-  }
-          break;
-      }
-    }
-    if(usuarioEncontrado == null){
-      mostrarMensagem('E-mail ou senha incorretos');
-      return;
-    } 
+    // for(var usuario in usuarios){
+    //   if (
+    //     usuario['email'] == email && 
+    //     usuario['senha'] == senha){
+    //       break;
+    //   }
+    // }
 
-    String nome = usuarioEncontrado?['nome'] ?? '';
+    setState(() {
+      carregando = true;
+    });
+
+    final resultado = await ApiService.login(
+      email: email,
+      senha: senha
+    );
+
+        setState(() {
+      carregando = false;
+    });
+
+    if(resultado['sucesso'] == true){
+      final dados = resultado['dados'];
+      final usuario = dados[usuarios];
+
+      String nome = usuario['nome']?? "Usuario";
+      String emailUsuario = usuario['email'] ?? email;
 
     Navigator.pushReplacement(
       context,
@@ -65,6 +75,14 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+    }
+
+    // if(usuarioEncontrado == null){
+    //   mostrarMensagem('E-mail ou senha incorretos');
+    //   return;
+    // } 
+
+    
   }
 
   void abrirCadastro(){
