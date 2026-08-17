@@ -40,12 +40,18 @@ class _LoginPageState extends State<LoginPage> {
       if (
         usuario['email'] == email && 
         usuario['senha'] == senha){
-          usuarioEncontrado = usuario;
+          @override
+  void dispose(){
+    emailController.dispose();
+    senhaController.dispose();
+    super.dispose();
+  }
           break;
       }
     }
     if(usuarioEncontrado == null){
       mostrarMensagem('E-mail ou senha incorretos');
+      return;
     } 
 
     String nome = usuarioEncontrado?['nome'] ?? '';
@@ -68,6 +74,13 @@ class _LoginPageState extends State<LoginPage> {
         builder: (context) => const CadastroPage(),
       ),
     );
+  }
+
+  @override
+  void dispose(){
+    emailController.dispose();
+    senhaController.dispose();
+    super.dispose();
   }
   
   @override
